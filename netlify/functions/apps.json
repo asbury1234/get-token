@@ -1,0 +1,6 @@
+{
+  "appId": "1478582326900937",
+  "appSecret": "83b966805b2085e20b3abadb1bdfdbed",
+  "redirectUri": "https://getaccesstokentesting1.netlify.app/.netlify/functions/callback",
+  "scope": "threads_basic,threads_content_publish"
+}
