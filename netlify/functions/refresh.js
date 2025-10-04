@@ -18,11 +18,13 @@ exports.handler = async (event) => {
 
         const app = JSON.parse(await fs.readFile(appsFilePath, 'utf8'));
 
-        const response = await axios.get('https://graph.threads.net/access_token', {
+        // Exchange short-lived token for a long-lived Facebook access token
+        const response = await axios.get('https://graph.facebook.com/v19.0/oauth/access_token', { // Using Facebook Graph API v19.0, adjust as needed
             params: {
-                grant_type: 'th_exchange_token',
+                grant_type: 'fb_exchange_token',
+                client_id: app.appId, // Assuming appId is stored in apps.json for Facebook
                 client_secret: app.appSecret,
-                access_token: token,
+                fb_exchange_token: token, // Parameter for short-lived token is fb_exchange_token
             },
         });
 
