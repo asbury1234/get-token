@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessageElement = document.getElementById('error-message');
 
     let appConfig;
+    let platform = 'facebook'; // Default to 'facebook', or dynamically set it if needed
 
     // --- Main App Logic ---
 
@@ -18,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const shortLivedToken = urlParams.get('short_lived_token');
+
+        // You might want to add a parameter to the URL to specify the platform, e.g., ?platform=facebook
+        // For simplicity, we'll assume it's always Facebook for this conversion.
+        // If you need to support both, you'd check a 'platform' query parameter.
 
         if (code) {
             await handleCallback(code);
@@ -33,8 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/.netlify/functions/getConfig');
             const data = await response.json();
             if (response.ok) {
-                appConfig = data.app;
-                authButton.textContent = 'Generate Token';
+                // Assuming appConfig.app now contains a structure like { facebook: {...}, threads: {...} }
+                // We'll target the 'facebook' property.
+                appConfig = data.app[platform]; 
+                if (!appConfig) {
+                    throw new Error(`Configuration for platform '${platform}' not found.`);
+                }
+                authButton.textContent = 'Generate Facebook Token';
                 authButton.disabled = false;
             } else {
                 showError(data.error);
@@ -49,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     authButton.addEventListener('click', () => {
         if (appConfig) {
             const { appId, redirectUri, scope } = appConfig;
-            const authUrl = `https://threads.net/oauth/authorize?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
+            // Facebook OAuth authorization URL
+            const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
             window.location.href = authUrl;
         }
     });
@@ -68,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleCallback(code) {
         step1.style.display = 'none';
         try {
+            // Your Netlify function 'callback' should now be configured to handle Facebook OAuth
             const response = await fetch(`/.netlify/functions/callback?code=${code}`);
             if (!response.ok) {
                 const errorData = await response.json();
@@ -91,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getLongLivedToken(shortLivedToken) {
+        // Your Netlify function 'refresh' should now be configured to handle Facebook token refresh
         const response = await fetch('/.netlify/functions/refresh', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
