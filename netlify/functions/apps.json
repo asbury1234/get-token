@@ -2,6 +2,6 @@
   "appId": "1114700430787758",
   "appSecret": "3bae9e32b032765aca975915a6e6e3d2",
   "redirectUri": "https://getaccesstokentesting1.netlify.app/.netlify/functions/callback",
-  "scope": "business_asset_user_profile_access, business_management, email, pages_manage_engagement, pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_show_list, public_profile, read_insights"
+   "scope": "public_profile,email,pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content,pages_manage_engagement,read_insights"
 
 }
